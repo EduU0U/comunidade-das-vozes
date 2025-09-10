@@ -1,53 +1,62 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vozes — Comunidade</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root {
-      --bg: #0f172a; --card:#0b1220; --text:#e6eef8; --accent:#6ee7b7;
-    }
-    [data-theme="ocean"]{ --bg:#0f172a; --card:#071029; --text:#e6f7ff; --accent:#60a5fa }
-    [data-theme="sunset"]{ --bg:#fff7f0; --card:#fff1e6; --text:#2b2b2b; --accent:#f97316 }
-    [data-theme="mint"]{ --bg:#f6fffb; --card:#ecfff5; --text:#03251a; --accent:#34d399 }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vozes — Comunidade (Estruturado)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{ --bg:#0f172a; --card:#0b1220; --text:#e6eef8; --accent:#6ee7b7; }
+  [data-theme="ocean"]{ --bg:#0f172a; --card:#071029; --text:#e6f7ff; --accent:#60a5fa }
+  [data-theme="sunset"]{ --bg:#fff7f0; --card:#fff1e6; --text:#2b2b2b; --accent:#f97316 }
+  [data-theme="mint"]{ --bg:#f6fffb; --card:#ecfff5; --text:#03251a; --accent:#34d399 }
 
-    body{ background:var(--bg); color:var(--text); transition: background 0.3s, color 0.3s; }
-    .card{ background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)); background-color:var(--card); color:var(--text); transition: background 0.3s, color 0.3s; }
-    .btn-accent{ background:var(--accent); color:inherit; transition: background 0.2s, transform 0.2s; }
-    .btn-accent:hover{ transform:scale(1.05); }
-    .img-thumb{ max-height:110px; object-fit:cover; border-radius:6px }
-
-    .passport{ display:flex; gap:1rem; align-items:flex-start }
-    .passport .avatar{ width:110px; height:140px; border-radius:6px; object-fit:cover; border:4px solid rgba(255,255,255,0.06) }
-
-    .toast{ position:fixed; top:1rem; right:1rem; background:var(--card); padding:.75rem 1rem; border-radius:.5rem; box-shadow:0 2px 6px rgba(0,0,0,.3); animation:fadeIn .3s ease; }
-    @keyframes fadeIn{ from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
-  </style>
+  body{ background:var(--bg); color:var(--text); transition: background 0.25s, color 0.25s; }
+  .card{ background:var(--card); color:var(--text); transition: background 0.25s; box-shadow:0 6px 18px rgba(2,6,23,0.4); }
+  .btn-accent{ background:var(--accent); color:inherit; transition:transform .14s; }
+  .btn-accent:hover{ transform:scale(1.03); }
+  .avatar-sm{ width:36px;height:36px;border-radius:999px;object-fit:cover; }
+  .avatar-lg{ width:110px;height:140px;border-radius:8px;object-fit:cover; }
+  .img-thumb{ max-height:110px; object-fit:cover; border-radius:6px }
+  .toast{ position:fixed; top:1rem; right:1rem; background:var(--card); padding:.65rem .9rem; border-radius:.45rem; box-shadow:0 6px 20px rgba(0,0,0,.45); z-index:60; }
+  .hidden-el{ display:none; }
+  /* modal backdrop */
+  .modal-backdrop{ background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); }
+</style>
 </head>
 <body data-theme="ocean" class="min-h-screen antialiased">
-  <div class="max-w-5xl mx-auto p-4">
+  <div class="max-w-6xl mx-auto p-4">
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
       <div>
         <h1 class="text-3xl font-extrabold">Vozes</h1>
-        <p class="text-sm opacity-80">Um espaço para criar, buscar e compartilhar personagens.</p>
+        <p class="text-sm opacity-80">Comunidade para criar, buscar e compartilhar personagens — preparado para backend.</p>
       </div>
 
       <div class="flex items-center gap-3 flex-wrap">
         <input id="search" type="search" aria-label="Pesquisar personagem" placeholder="Pesquisar..." class="px-3 py-2 rounded-md bg-white/5 placeholder:opacity-60 outline-none" />
 
         <div class="relative">
-          <button id="themeBtn" aria-label="Trocar paleta de cores" class="px-3 py-2 rounded-md card">Paleta</button>
-          <div id="themeMenu" class="hidden absolute right-0 mt-2 w-40 card p-2 rounded-md shadow-lg">
+          <button id="themeBtn" aria-label="Trocar paleta" class="px-3 py-2 rounded-md card">🎨 Paleta</button>
+          <div id="themeMenu" class="hidden absolute right-0 mt-2 w-44 card p-2 rounded-md shadow-lg">
             <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="ocean">Ocean (padrão)</button>
             <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="sunset">Sunset</button>
             <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="mint">Mint</button>
           </div>
         </div>
 
-        <button id="profileBtn" class="px-4 py-2 rounded-md card">Meu Perfil</button>
-        <button id="newPostBtn" class="px-4 py-2 rounded-md btn-accent">Novo Post</button>
+        <div id="authArea" class="flex items-center gap-2">
+          <!-- when logged out: show Login/Register -->
+          <button id="btnLogin" class="px-3 py-2 rounded-md card">Entrar</button>
+          <button id="btnRegister" class="px-3 py-2 rounded-md btn-accent">Criar Conta</button>
+        </div>
+
+        <div id="userArea" class="hidden items-center gap-2">
+          <img id="headerAvatar" class="avatar-sm" alt="avatar"/>
+          <span id="headerName" class="text-sm opacity-90"></span>
+          <button id="btnProfile" class="px-3 py-1 rounded-md card">Meu Perfil</button>
+          <button id="btnNewPost" class="px-3 py-1 rounded-md btn-accent">+ Novo Post</button>
+          <button id="btnLogout" class="px-3 py-1 rounded-md card">Sair</button>
+        </div>
       </div>
     </header>
 
@@ -56,97 +65,120 @@
         <div id="posts" class="space-y-4"></div>
       </section>
 
-      <aside class="card p-4 rounded-md hidden lg:block">
+      <aside class="card p-4 rounded-md hidden lg:block sticky top-6">
         <h2 class="text-xl font-semibold mb-2">Como usar</h2>
         <ol class="list-decimal ml-5 space-y-1 text-sm opacity-90">
-          <li>Crie seu perfil no botão <strong>"Meu Perfil"</strong>.</li>
-          <li>Pesquise um personagem pelo nome no campo superior.</li>
-          <li>Crie um post com foto, imagens e descrição (modelo passaporte).</li>
-          <li>Use o ditado por voz para escrever descrições.</li>
-          <li>Comente nos posts de outros usuários e curta suas criações.</li>
-          <li>Troque a paleta no botão "Paleta".</li>
+          <li>Crie/entre em sua conta para postar e comentar.</li>
+          <li>Pesquise por personagem no campo acima.</li>
+          <li>Clique em um avatar/nome para ver o perfil público desse usuário.</li>
+          <li>Posts, comentários e contas estão prontos para migrar à um backend real (camada `api`).</li>
         </ol>
       </aside>
     </main>
 
-    <footer class="mt-8 text-xs opacity-80">Feito para a comunidade <strong>Vozes</strong>. Dados armazenados localmente no navegador.</footer>
+    <footer class="mt-8 text-xs opacity-80 text-center">Pronto para integrar com backend (API). Persistência local quando isolado.</footer>
   </div>
 
-  <!-- Modal Perfil -->
-  <div id="profileModal" class="fixed inset-0 hidden items-center justify-center p-6 bg-black/50" role="dialog" aria-modal="true">
-    <div class="w-full max-w-md card rounded-lg p-5 shadow-2xl">
-      <h3 class="text-xl font-semibold mb-4">Meu Perfil</h3>
-      <form id="profileForm" class="space-y-3">
-        <div>
-          <label class="text-sm">Nickname</label>
-          <input id="nickname" required class="w-full px-3 py-2 rounded-md bg-white/5 outline-none" />
-        </div>
-        <div>
-          <label class="text-sm">Foto do perfil</label>
-          <input id="profileAvatar" type="file" accept="image/*" class="w-full text-sm" />
-        </div>
+  <!-- Modals: Login / Register / Profile view / New Post -->
+  <div id="modalBackdrop" class="fixed inset-0 hidden modal-backdrop z-40 items-center justify-center p-4">{/*backdrop*/}</div>
+
+  <!-- Login -->
+  <div id="loginModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
+    <div class="w-full max-w-md card rounded-lg p-5">
+      <h3 class="text-xl font-semibold mb-3">Entrar</h3>
+      <form id="loginForm" class="space-y-3">
+        <div><label class="text-sm">Nickname</label><input id="loginNick" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+        <div><label class="text-sm">Senha</label><input id="loginPass" type="password" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
         <div class="flex justify-end gap-2">
-          <button type="button" id="closeProfile" class="px-3 py-2 rounded-md card">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-md btn-accent">Salvar</button>
+          <button type="button" id="loginCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-md btn-accent">Entrar</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal Novo Post -->
-  <div id="modal" class="fixed inset-0 hidden items-center justify-center p-6 bg-black/50" role="dialog" aria-modal="true">
-    <div class="w-full max-w-2xl card rounded-lg p-5 shadow-2xl">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-semibold">Criar post — Passaporte</h3>
-        <button id="closeModal" aria-label="Fechar modal" class="text-sm px-3 py-1 rounded-md">✕</button>
+  <!-- Register -->
+  <div id="registerModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
+    <div class="w-full max-w-md card rounded-lg p-5">
+      <h3 class="text-xl font-semibold mb-3">Criar Conta</h3>
+      <form id="registerForm" class="space-y-3">
+        <div><label class="text-sm">Nickname</label><input id="regNick" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+        <div><label class="text-sm">Senha</label><input id="regPass" type="password" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+        <div><label class="text-sm">Foto (opcional)</label><input id="regAvatar" type="file" accept="image/*" class="w-full text-sm" /></div>
+        <div class="flex justify-end gap-2">
+          <button type="button" id="regCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
+          <button type="submit" class="px-4 py-2 rounded-md btn-accent">Criar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- New Post -->
+  <div id="newPostModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
+    <div class="w-full max-w-2xl card rounded-lg p-5 overflow-y-auto max-h-[90vh]">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xl font-semibold">Novo Post — Passaporte</h3>
+        <button id="newPostClose" class="px-2 py-1 rounded-md card">Fechar</button>
       </div>
-      <form id="postForm" class="space-y-3">
-        <div>
-          <label class="text-sm">Nome do personagem</label>
-          <input id="pName" required class="w-full px-3 py-2 rounded-md bg-white/5 outline-none" />
-        </div>
-        <div>
-          <label class="text-sm">Foto de perfil</label>
-          <input id="pAvatar" type="file" accept="image/*" class="w-full text-sm" />
-        </div>
-        <div>
-          <label class="text-sm">Descrição</label>
-          <textarea id="pDesc" rows="4" class="w-full px-3 py-2 rounded-md bg-white/5 outline-none" required></textarea>
-        </div>
-        <div>
-          <label class="text-sm">Imagens que identificam (várias)</label>
-          <input id="pImages" type="file" accept="image/*" multiple class="w-full text-sm" />
-        </div>
-        <div class="flex justify-end">
-          <button type="submit" id="submitPost" class="px-4 py-2 rounded-md btn-accent">Postar</button>
+      <form id="newPostForm" class="space-y-3">
+        <div><label class="text-sm">Nome do personagem</label><input id="npName" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+        <div><label class="text-sm">Foto do personagem</label><input id="npAvatar" type="file" accept="image/*" class="w-full text-sm" /></div>
+        <div><label class="text-sm">Descrição</label><textarea id="npDesc" rows="4" required class="w-full px-3 py-2 rounded-md bg-white/5"></textarea></div>
+        <div><label class="text-sm">Imagens</label><input id="npImages" type="file" accept="image/*" multiple class="w-full text-sm" /></div>
+        <div class="flex justify-end gap-2">
+          <button type="button" id="newPostCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
+          <button type="submit" id="newPostSubmit" class="px-4 py-2 rounded-md btn-accent">Postar</button>
         </div>
       </form>
     </div>
   </div>
 
-  <template id="postTemplate">
-    <article class="card p-4 rounded-md">
-      <div class="passport">
-        <img class="avatar" src="" alt="avatar" />
+  <!-- Profile View (public) -->
+  <div id="profileViewModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
+    <div class="w-full max-w-3xl card rounded-lg p-5 max-h-[90vh] overflow-auto">
+      <div class="flex items-start gap-4">
+        <img id="pvAvatar" class="avatar-lg" alt="avatar"/>
         <div class="flex-1">
           <div class="flex items-center justify-between">
             <div>
-              <h3 class="text-lg font-semibold name"></h3>
-              <div class="text-xs opacity-80 meta"></div>
+              <h3 id="pvName" class="text-2xl font-semibold"></h3>
+              <p id="pvAbout" class="text-sm opacity-80">Perfil público</p>
             </div>
-            <div class="flex gap-2 items-center">
-              <img class="w-8 h-8 rounded-full userAvatar" alt="user avatar" />
-              <span class="text-sm opacity-80 userName"></span>
-              <button class="px-3 py-1 rounded-md card btn-comment">💬</button>
+            <div>
+              <button id="pvClose" class="px-3 py-1 rounded-md card">Fechar</button>
             </div>
           </div>
-          <p class="mt-3 desc"></p>
-          <div class="mt-3 images grid grid-cols-3 gap-2"></div>
-          <div class="mt-3 commentsArea hidden">
+          <hr class="my-3"/>
+          <h4 class="font-semibold">Posts de <span id="pvNameSmall"></span></h4>
+          <div id="pvPosts" class="space-y-3 mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Templates -->
+  <template id="postTpl">
+    <article class="card p-4 rounded-md">
+      <div class="flex gap-4">
+        <img class="avatar-lg postAvatar" alt="avatar"/>
+        <div class="flex-1">
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-lg font-semibold postName"></h3>
+              <div class="text-xs opacity-80 postMeta"></div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-2 py-1 rounded-md card btn-comment">💬</button>
+            </div>
+          </div>
+          <p class="mt-2 postDesc"></p>
+          <div class="mt-3 postImages grid grid-cols-3 gap-2"></div>
+          <div class="mt-3 commentBlock hidden">
             <div class="space-y-2 existingComments"></div>
-            <form class="mt-2 commentForm flex gap-2">
+            <form class="mt-2 commentForm flex gap-2 items-center">
+              <img class="avatar-sm commentAuthorAvatar" alt="avatar"/>
               <input class="flex-1 px-3 py-2 rounded-md bg-white/5 commentInput" placeholder="Escreva um comentário..." />
-              <button class="px-3 py-2 rounded-md btn-accent" disabled>Enviar</button>
+              <button class="px-3 py-2 rounded-md btn-accent commentSend" disabled>Enviar</button>
             </form>
           </div>
         </div>
@@ -155,116 +187,423 @@
   </template>
 
   <script>
-    // --- Utils ---
-    const loadPosts = () => JSON.parse(localStorage.getItem('vozes_posts')||'[]');
-    const savePosts = arr => localStorage.setItem('vozes_posts', JSON.stringify(arr));
-    const loadProfile = () => JSON.parse(localStorage.getItem('vozes_profile')||'{}');
-    const saveProfile = obj => localStorage.setItem('vozes_profile', JSON.stringify(obj));
+  /*************************************************************************
+   * Camada de API (abstração) - hoje usa localStorage, futuro: trocar por fetch()
+   * Todas funções retornam Promise para facilitar swap por backend.
+   *************************************************************************/
+  const api = {
+    // usuários: [{ id, nick, avatarDataUrl, passHash }]
+    async getUsers(){
+      return JSON.parse(localStorage.getItem('vozes_users')||'[]');
+    },
+    async saveUsers(users){
+      localStorage.setItem('vozes_users', JSON.stringify(users));
+    },
+    async createUser({nick, avatarDataUrl, passHash}){
+      const users = await api.getUsers();
+      if(users.find(u=>u.nick.toLowerCase()===nick.toLowerCase())) throw new Error('Nickname já existe');
+      const user = { id: Date.now().toString(), nick, avatar: avatarDataUrl||'', passHash };
+      users.push(user);
+      await api.saveUsers(users);
+      return user;
+    },
+    async authenticate({nick, passHash}){
+      const users = await api.getUsers();
+      const u = users.find(x=>x.nick.toLowerCase()===nick.toLowerCase() && x.passHash === passHash);
+      if(!u) throw new Error('Credenciais inválidas');
+      // save session
+      localStorage.setItem('vozes_session', JSON.stringify({userId: u.id, createdAt: new Date().toISOString()}));
+      return u;
+    },
+    async getSession(){
+      const s = JSON.parse(localStorage.getItem('vozes_session')||'null');
+      if(!s) return null;
+      const users = await api.getUsers();
+      return users.find(u=>u.id===s.userId) || null;
+    },
+    async clearSession(){
+      localStorage.removeItem('vozes_session');
+    },
 
-    const fileToDataURL = f => new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});
-
-    const toast = msg=>{
-      const el=document.createElement('div');
-      el.className="toast"; el.textContent=msg;
-      document.body.appendChild(el);
-      setTimeout(()=>el.remove(),2500);
-    };
-
-    // --- Theme ---
-    const themeBtn=document.getElementById('themeBtn'), themeMenu=document.getElementById('themeMenu');
-    document.querySelectorAll('#themeMenu button').forEach(b=>b.addEventListener('click',e=>{
-      const t=e.currentTarget.dataset.theme; document.body.setAttribute('data-theme',t); localStorage.setItem('vozes_theme',t); themeMenu.classList.add('hidden'); toast("Tema alterado!");
-    }));
-    themeBtn.addEventListener('click',()=>themeMenu.classList.toggle('hidden'));
-    document.body.setAttribute('data-theme',localStorage.getItem('vozes_theme')||'ocean');
-    document.addEventListener('click',e=>{if(!themeBtn.contains(e.target)&&!themeMenu.contains(e.target)) themeMenu.classList.add('hidden')});
-
-    // --- Perfil ---
-    const profileModal=document.getElementById('profileModal');
-    document.getElementById('profileBtn').onclick=()=>{profileModal.classList.remove('hidden');document.getElementById('nickname').focus();};
-    document.getElementById('closeProfile').onclick=()=>profileModal.classList.add('hidden');
-    document.getElementById('profileForm').onsubmit=async ev=>{
-      ev.preventDefault();
-      const name=document.getElementById('nickname').value.trim();
-      let avatar='';
-      if(document.getElementById('profileAvatar').files[0]) avatar=await fileToDataURL(document.getElementById('profileAvatar').files[0]);
-      saveProfile({name,avatar}); profileModal.classList.add('hidden'); toast("Perfil salvo!");
-    };
-
-    // --- Novo Post ---
-    const modal=document.getElementById('modal'), postForm=document.getElementById('postForm');
-    document.getElementById('newPostBtn').onclick=()=>{modal.classList.remove('hidden');document.getElementById('pName').focus();};
-    document.getElementById('closeModal').onclick=()=>modal.classList.add('hidden');
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'){modal.classList.add('hidden');profileModal.classList.add('hidden')}});
-
-    postForm.onsubmit=async ev=>{
-      ev.preventDefault();
-      const btn=document.getElementById('submitPost'); btn.disabled=true; btn.textContent="Postando...";
-      const name=document.getElementById('pName').value.trim();
-      const avatarF=document.getElementById('pAvatar').files[0];
-      const desc=document.getElementById('pDesc').value.trim();
-      const imgs=Array.from(document.getElementById('pImages').files);
-      const avatar=avatarF?await fileToDataURL(avatarF):'';
-      const images=[]; for(const f of imgs) images.push(await fileToDataURL(f));
-      const profile=loadProfile();
-      const posts=loadPosts();
-      posts.unshift({id:Date.now(),name,desc,avatar,images,comments:[],createdAt:new Date().toISOString(),user:profile});
-      savePosts(posts);
-      renderPosts(posts);
-      postForm.reset(); modal.classList.add('hidden'); btn.disabled=false; btn.textContent="Postar"; toast("Post criado!");
-    };
-
-    // --- Render ---
-    const postsEl=document.getElementById('posts'), template=document.getElementById('postTemplate');
-    function renderPosts(posts){
-      postsEl.innerHTML='';
-      for(const p of posts){
-        const node=template.content.cloneNode(true);
-        node.querySelector('.avatar').src=p.avatar||'https://via.placeholder.com/110x140?text=Sem+Foto';
-        node.querySelector('.name').textContent=p.name;
-        node.querySelector('.meta').textContent=new Date(p.createdAt).toLocaleString();
-        node.querySelector('.desc').textContent=p.desc;
-        node.querySelector('.userName').textContent=p.user?.name||"Anon";
-        node.querySelector('.userAvatar').src=p.user?.avatar||'https://via.placeholder.com/40?text=?';
-
-        const wrap=node.querySelector('.images');
-        p.images.forEach(src=>{const img=document.createElement('img');img.src=src;img.className="img-thumb";wrap.appendChild(img)});
-
-        const commentsArea=node.querySelector('.commentsArea'), existing=node.querySelector('.existingComments');
-        function refreshComments(){
-          existing.innerHTML='';
-          for(const c of p.comments){
-            const div=document.createElement('div'); div.className='text-sm p-2 rounded-md bg-white/10';
-            div.innerHTML=`<strong>${c.author}</strong> <span class="opacity-80 text-xs">- ${new Date(c.at).toLocaleString()}</span><div>${c.text}</div>`;
-            existing.appendChild(div);
-          }
-        }
-        refreshComments();
-
-        node.querySelector('.btn-comment').onclick=()=>commentsArea.classList.toggle('hidden');
-        const cForm=node.querySelector('.commentForm'), cInput=cForm.querySelector('.commentInput'), cBtn=cForm.querySelector('button');
-        cInput.addEventListener('input',()=>cBtn.disabled=!cInput.value.trim());
-        cForm.onsubmit=ev=>{
-          ev.preventDefault(); if(!cInput.value.trim())return;
-          const profile=loadProfile();
-          p.comments.push({author:profile.name||"Anon", text:cInput.value.trim(), at:new Date().toISOString()});
-          saveSinglePost(p); refreshComments(); cInput.value=''; cBtn.disabled=true; toast("Comentário enviado!");
-        };
-
-        postsEl.appendChild(node);
-      }
+    // posts: [{ id, name, desc, avatar, images[], comments: [{authorId, authorName, text, at}], createdAt, userId }]
+    async getPosts(){
+      return JSON.parse(localStorage.getItem('vozes_posts')||'[]');
+    },
+    async savePosts(posts){
+      localStorage.setItem('vozes_posts', JSON.stringify(posts));
+    },
+    async savePost(post){
+      const posts = await api.getPosts();
+      posts.unshift(post);
+      await api.savePosts(posts);
+      return post;
+    },
+    async updatePost(post){
+      const posts = await api.getPosts();
+      const idx = posts.findIndex(p=>p.id===post.id);
+      if(idx>=0) posts[idx]=post;
+      else posts.unshift(post);
+      await api.savePosts(posts);
+    },
+    async addComment(postId, comment){
+      const posts = await api.getPosts();
+      const p = posts.find(x=>x.id===postId);
+      if(!p) throw new Error('Post não encontrado');
+      p.comments = p.comments||[];
+      p.comments.push(comment);
+      await api.savePosts(posts);
+      return p;
     }
-    const saveSinglePost=p=>{const posts=loadPosts();const i=posts.findIndex(x=>x.id===p.id);if(i>=0)posts[i]=p;else posts.unshift(p);savePosts(posts)};
+  };
 
-    // --- Search ---
-    document.getElementById('search').addEventListener('input',()=>{
-      const q=document.getElementById('search').value.trim().toLowerCase();
-      const all=loadPosts(); if(!q){renderPosts(all);return}
-      renderPosts(all.filter(p=>p.name.toLowerCase().includes(q)));
+  /*************************************************************************
+   * Utilitários
+   *************************************************************************/
+  const el = id => document.getElementById(id);
+  const fileToDataURL = file => new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = ()=> res(fr.result);
+    fr.onerror = rej;
+    fr.readAsDataURL(file);
+  });
+
+  // SHA-256 hash -> hex (client-side). Good for local demo; server should verify properly.
+  async function hashStringSHA256(str){
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    // to hex
+    const hex = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    return hex;
+  }
+
+  function toast(msg){
+    const d = document.createElement('div');
+    d.className = 'toast';
+    d.textContent = msg;
+    document.body.appendChild(d);
+    setTimeout(()=> d.remove(), 2500);
+  }
+
+  // UI helpers: show/hide modal (backdrop)
+  function showModal(modalEl){
+    el('modalBackdrop').classList.remove('hidden');
+    modalEl.classList.remove('hidden');
+  }
+  function hideModal(modalEl){
+    modalEl.classList.add('hidden');
+    // if no other modal visible, hide backdrop
+    const any = Array.from(document.querySelectorAll('.fixed.z-50')).some(m=>!m.classList.contains('hidden'));
+    if(!any) el('modalBackdrop').classList.add('hidden');
+  }
+
+  /*************************************************************************
+   * Estado inicial & login/session handling
+   *************************************************************************/
+  async function initSessionUI(){
+    const user = await api.getSession();
+    if(user){
+      // show user area
+      el('authArea').classList.add('hidden');
+      el('userArea').classList.remove('hidden');
+      el('headerAvatar').src = user.avatar || 'https://via.placeholder.com/40?text=?';
+      el('headerName').textContent = user.nick;
+    } else {
+      el('authArea').classList.remove('hidden');
+      el('userArea').classList.add('hidden');
+    }
+  }
+
+  /*************************************************************************
+   * Theme handling
+   *************************************************************************/
+  el('themeBtn').addEventListener('click', ()=> el('themeMenu').classList.toggle('hidden'));
+  document.querySelectorAll('#themeMenu button').forEach(b=>{
+    b.addEventListener('click', e=>{
+      const t = e.currentTarget.dataset.theme;
+      document.body.setAttribute('data-theme', t);
+      localStorage.setItem('vozes_theme', t);
+      el('themeMenu').classList.add('hidden');
+      toast('Tema alterado');
     });
+  });
+  document.body.setAttribute('data-theme', localStorage.getItem('vozes_theme')||'ocean');
+  document.addEventListener('click', e=>{ if(!el('themeBtn').contains(e.target) && !el('themeMenu').contains(e.target)) el('themeMenu').classList.add('hidden'); });
 
-    renderPosts(loadPosts());
+  /*************************************************************************
+   * Auth: register / login / logout
+   *************************************************************************/
+  el('btnRegister').addEventListener('click', ()=> {
+    showModal(el('registerModal'));
+  });
+  el('regCancel').addEventListener('click', ()=> hideModal(el('registerModal')));
+  el('registerForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    try{
+      const nick = el('regNick').value.trim();
+      const pass = el('regPass').value;
+      if(!nick || !pass) return toast('Nickname e senha são obrigatórios');
+      const passHash = await hashStringSHA256(pass);
+      let avatar='';
+      if(el('regAvatar').files[0]) avatar = await fileToDataURL(el('regAvatar').files[0]);
+      const user = await api.createUser({nick, avatarDataUrl:avatar, passHash});
+      // auto-login
+      localStorage.setItem('vozes_session', JSON.stringify({userId:user.id, createdAt: new Date().toISOString()}));
+      await initSessionUI();
+      hideModal(el('registerModal'));
+      toast('Conta criada e logado!');
+      renderAll();
+    }catch(err){ toast(err.message||'Erro ao criar conta') }
+  });
+
+  // Login
+  el('btnLogin').addEventListener('click', ()=> showModal(el('loginModal')));
+  el('loginCancel').addEventListener('click', ()=> hideModal(el('loginModal')));
+  el('loginForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    try{
+      const nick = el('loginNick').value.trim();
+      const pass = el('loginPass').value;
+      if(!nick || !pass) return toast('Preencha nickname e senha');
+      const passHash = await hashStringSHA256(pass);
+      await api.authenticate({nick, passHash});
+      await initSessionUI();
+      hideModal(el('loginModal'));
+      toast('Logado com sucesso');
+      renderAll();
+    }catch(err){ toast(err.message||'Erro ao autenticar') }
+  });
+
+  // Logout
+  el('btnLogout').addEventListener('click', async ()=> {
+    await api.clearSession();
+    await initSessionUI();
+    toast('Desconectado');
+    renderAll();
+  });
+
+  // Profile button opens profile of current user
+  el('btnProfile').addEventListener('click', async ()=>{
+    const u = await api.getSession();
+    if(!u) { toast('Faça login'); return; }
+    openProfileView(u.id);
+  });
+
+  /*************************************************************************
+   * New Post modal & creation (requires login)
+   *************************************************************************/
+  el('btnNewPost').addEventListener('click', async ()=>{
+    const u = await api.getSession();
+    if(!u){ toast('Faça login para criar posts'); return; }
+    // open modal
+    showModal(el('newPostModal'));
+  });
+  el('newPostClose').addEventListener('click', ()=> hideModal(el('newPostModal')));
+  el('newPostCancel').addEventListener('click', ()=> hideModal(el('newPostModal')));
+  el('newPostForm').addEventListener('submit', async e=>{
+    e.preventDefault();
+    const user = await api.getSession();
+    if(!user){ toast('Faça login para criar posts'); hideModal(el('newPostModal')); return; }
+    const submitBtn = el('newPostSubmit'); submitBtn.disabled = true; submitBtn.textContent = 'Postando...';
+    try{
+      const name = el('npName').value.trim();
+      const desc = el('npDesc').value.trim();
+      const avatarFile = el('npAvatar').files[0];
+      const images = Array.from(el('npImages').files);
+      const avatar = avatarFile ? await fileToDataURL(avatarFile) : '';
+      const imgsData = [];
+      for(const f of images) imgsData.push(await fileToDataURL(f));
+      const post = {
+        id: Date.now().toString(),
+        name, desc, avatar, images: imgsData,
+        comments: [],
+        createdAt: new Date().toISOString(),
+        userId: user.id
+      };
+      await api.savePost(post);
+      hideModal(el('newPostModal'));
+      toast('Post criado!');
+      el('newPostForm').reset();
+      renderAll();
+    }catch(err){
+      toast('Erro ao criar post');
+      console.error(err);
+    } finally {
+      submitBtn.disabled = false; submitBtn.textContent = 'Postar';
+    }
+  });
+
+  /*************************************************************************
+   * Render posts and comments with clickable user avatars -> open profile view
+   *************************************************************************/
+  async function renderAll(){
+    const posts = await api.getPosts();
+    // sort by createdAt desc
+    posts.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
+    renderPosts(posts);
+    await initSessionUI();
+  }
+
+  async function renderPosts(posts){
+    const container = el('posts');
+    container.innerHTML = '';
+    if(posts.length===0){
+      container.innerHTML = '<div class="text-center opacity-70 p-6">Nenhum post. Crie o primeiro!</div>';
+      return;
+    }
+    const users = await api.getUsers();
+
+    for(const p of posts){
+      const node = document.importNode(el('postTpl').content, true);
+      const postAvatar = node.querySelector('.postAvatar');
+      const postName = node.querySelector('.postName');
+      const postMeta = node.querySelector('.postMeta');
+      const postDesc = node.querySelector('.postDesc');
+      const postImages = node.querySelector('.postImages');
+      const commentBlock = node.querySelector('.commentBlock');
+      const commentForm = node.querySelector('.commentForm');
+      const commentInput = node.querySelector('.commentInput');
+      const commentSend = node.querySelector('.commentSend');
+      const existingComments = node.querySelector('.existingComments');
+
+      // Show user who created post
+      const author = users.find(u=>u.id===p.userId);
+      if(author){
+        postAvatar.src = p.avatar || author.avatar || 'https://via.placeholder.com/110x140?text=Sem';
+        postAvatar.style.cursor = 'pointer';
+        postAvatar.addEventListener('click', ()=> openProfileView(author.id));
+        postName.innerHTML = `<span class="cursor-pointer" style="text-decoration:underline">${escapeHtml(p.name)}</span>`;
+        postName.querySelector('span').addEventListener('click', ()=> openProfileView(author.id));
+      } else {
+        postAvatar.src = p.avatar || 'https://via.placeholder.com/110x140?text=Sem';
+      }
+
+      postMeta.textContent = new Date(p.createdAt).toLocaleString();
+      postDesc.textContent = p.desc || '';
+
+      // images
+      postImages.innerHTML = '';
+      (p.images||[]).forEach(src=>{
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'img-thumb';
+        postImages.appendChild(img);
+      });
+
+      // comments list & UI
+      function refreshCommentsLocal(){
+        existingComments.innerHTML = '';
+        (p.comments||[]).forEach(c=>{
+          const row = document.createElement('div');
+          row.className = 'flex items-start gap-2 p-2 rounded-md bg-white/5';
+          // find author
+          const authorC = users.find(u=>u.id===c.authorId);
+          const avatarUrl = authorC ? (authorC.avatar || 'https://via.placeholder.com/40') : 'https://via.placeholder.com/40';
+          row.innerHTML = `<img src="${avatarUrl}" class="avatar-sm" style="cursor:pointer"/><div class="flex-1"><div class="text-sm font-semibold" style="cursor:pointer">${escapeHtml(c.authorName||'Anon')}</div><div class="text-xs opacity-80">${new Date(c.at).toLocaleString()}</div><div class="mt-1 text-sm">${escapeHtml(c.text)}</div></div>`;
+          // click to open profile if have authorId
+          row.querySelector('img').addEventListener('click', ()=> authorC && openProfileView(authorC.id));
+          row.querySelector('.font-semibold').addEventListener('click', ()=> authorC && openProfileView(authorC.id));
+          existingComments.appendChild(row);
+        });
+      }
+      refreshCommentsLocal();
+
+      // comment toggle
+      const btnComment = node.querySelector('.btn-comment');
+      btnComment.addEventListener('click', ()=> commentBlock.classList.toggle('hidden'));
+
+      // comment form
+      commentInput.addEventListener('input', ()=> commentSend.disabled = !commentInput.value.trim());
+      commentForm.addEventListener('submit', async ev=>{
+        ev.preventDefault();
+        const sessUser = await api.getSession();
+        if(!sessUser){ toast('Faça login para comentar'); return; }
+        const text = commentInput.value.trim();
+        if(!text) return;
+        const comment = {
+          authorId: sessUser.id,
+          authorName: sessUser.nick,
+          text,
+          at: new Date().toISOString()
+        };
+        p.comments = p.comments||[];
+        p.comments.push(comment);
+        await api.updatePost(p);
+        refreshCommentsLocal();
+        commentInput.value = '';
+        commentSend.disabled = true;
+        toast('Comentário adicionado');
+        // re-render posts to persist any UI-dependent changes
+        // (we already updated local p and storage)
+      });
+
+      container.appendChild(node);
+    }
+  }
+
+  /*************************************************************************
+   * Profile view: open modal for given userId
+   *************************************************************************/
+  async function openProfileView(userId){
+    const users = await api.getUsers();
+    const user = users.find(u=>u.id===userId);
+    if(!user) { toast('Usuário não encontrado'); return; }
+    el('pvAvatar').src = user.avatar || 'https://via.placeholder.com/110x140?text=Sem';
+    el('pvName').textContent = user.nick;
+    el('pvNameSmall').textContent = user.nick;
+    // load posts by user
+    const posts = await api.getPosts();
+    const userPosts = posts.filter(p=>p.userId===user.id).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const container = el('pvPosts'); container.innerHTML = '';
+    userPosts.forEach(p=>{
+      const div = document.createElement('div');
+      div.className = 'card p-3 rounded-md';
+      div.innerHTML = `<div class="flex items-start gap-3"><img src="${p.avatar||'https://via.placeholder.com/110x140?text=Sem'}" class="w-16 h-20 object-cover rounded"/><div><div class="font-semibold">${escapeHtml(p.name)} <span class="text-xs opacity-80">- ${new Date(p.createdAt).toLocaleString()}</span></div><div class="text-sm mt-1">${escapeHtml(p.desc)}</div></div></div>`;
+      container.appendChild(div);
+    });
+    showModal(el('profileViewModal'));
+  }
+  el('pvClose').addEventListener('click', ()=> hideModal(el('profileViewModal')));
+
+  /*************************************************************************
+   * Small helpers & boot
+   *************************************************************************/
+  function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+  // search
+  el('search').addEventListener('input', async ()=>{
+    const q = el('search').value.trim().toLowerCase();
+    const posts = await api.getPosts();
+    if(!q){ renderPosts(posts); return; }
+    const filtered = posts.filter(p=> (p.name||'').toLowerCase().includes(q));
+    renderPosts(filtered);
+  });
+
+  // backdrop click closes modals
+  el('modalBackdrop').addEventListener('click', ()=>{
+    // hide all modals
+    ['loginModal','registerModal','newPostModal','profileViewModal'].forEach(id=> hideModal(el(id)));
+  });
+
+  // pressing Esc closes modals
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape'){
+      ['loginModal','registerModal','newPostModal','profileViewModal'].forEach(id=> hideModal(el(id)));
+    }
+  });
+
+  // wire up login/register modal display inside modalBackdrop
+  // showModal/hideModal manage modalBackdrop visibility
+  // For login/register we move node into z-50 area using showModal
+  el('btnLogin').addEventListener('click', ()=> showModal(el('loginModal')));
+  el('btnRegister').addEventListener('click', ()=> showModal(el('registerModal')));
+
+  // on nav init
+  (async function boot(){
+    await initSessionUI();
+    await renderAll();
+  })();
+
   </script>
 </body>
 </html>
-
