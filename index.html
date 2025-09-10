@@ -1,697 +1,237 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vozes — Comunidade (Admin)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root{ --bg:#0f172a; --card:#0b1220; --text:#e6eef8; --accent:#6ee7b7; }
-    [data-theme="ocean"]{ --bg:#0f172a; --card:#071029; --text:#e6f7ff; --accent:#60a5fa }
-    [data-theme="sunset"]{ --bg:#fff7f0; --card:#fff1e6; --text:#2b2b2b; --accent:#f97316 }
-    [data-theme="mint"]{ --bg:#f6fffb; --card:#ecfff5; --text:#03251a; --accent:#34d399 }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Vozes — Comunidade (Admin)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root{ --bg:#0f172a; --card:#0b1220; --text:#e6eef8; --accent:#6ee7b7; }
+  [data-theme="ocean"]{ --bg:#0f172a; --card:#071029; --text:#e6f7ff; --accent:#60a5fa }
+  [data-theme="sunset"]{ --bg:#fff7f0; --card:#fff1e6; --text:#2b2b2b; --accent:#f97316 }
+  [data-theme="mint"]{ --bg:#f6fffb; --card:#ecfff5; --text:#03251a; --accent:#34d399 }
 
-    body{ background:var(--bg); color:var(--text); transition: background .25s, color .25s; }
-    .card{ background:var(--card); color:var(--text); transition: background .25s; box-shadow:0 6px 18px rgba(2,6,23,0.4); }
-    .btn-accent{ background:var(--accent); color:inherit; transition: transform .14s; }
-    .btn-accent:hover{ transform:scale(1.03); }
-    .avatar-sm{ width:36px;height:36px;border-radius:999px;object-fit:cover; }
-    .avatar-lg{ width:110px;height:140px;border-radius:8px;object-fit:cover; }
-    .img-thumb{ max-height:110px; object-fit:cover; border-radius:6px }
-    .toast{ position:fixed; top:1rem; right:1rem; background:var(--card); padding:.65rem .9rem; border-radius:.45rem; box-shadow:0 6px 20px rgba(0,0,0,.45); z-index:60; }
-    .modal-backdrop{ background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); }
-    .role-badge{ font-size:11px; padding:.15rem .4rem; border-radius:999px; background:rgba(255,255,255,.06); margin-left:.5rem; }
-    .danger{ background: #7f1d1d; color: #fff; padding: .25rem .5rem; border-radius:6px; }
-    .muted{ opacity:.75; }
-  </style>
+  body{ background:var(--bg); color:var(--text); transition: background .25s, color .25s; }
+  .card{ background:var(--card); color:var(--text); transition: background .25s; box-shadow:0 6px 18px rgba(2,6,23,0.4); }
+  .btn-accent{ background:var(--accent); color:inherit; transition: transform .14s; }
+  .btn-accent:hover{ transform:scale(1.03); }
+  .avatar-sm{ width:36px;height:36px;border-radius:999px;object-fit:cover; }
+  .avatar-lg{ width:110px;height:140px;border-radius:8px;object-fit:cover; }
+  .img-thumb{ max-height:110px; object-fit:cover; border-radius:6px }
+  .toast{ position:fixed; top:1rem; right:1rem; background:var(--card); padding:.65rem .9rem; border-radius:.45rem; box-shadow:0 6px 20px rgba(0,0,0,.45); z-index:60; }
+  .modal-backdrop{ background: rgba(0,0,0,0.55); backdrop-filter: blur(2px); }
+  .role-badge{ font-size:11px; padding:.15rem .4rem; border-radius:999px; background:rgba(255,255,255,.06); margin-left:.5rem; }
+  .danger{ background: #7f1d1d; color: #fff; padding: .25rem .5rem; border-radius:6px; }
+  .muted{ opacity:.75; }
+  input:focus, textarea:focus{ outline:none; box-shadow:0 0 0 2px var(--accent); }
+</style>
 </head>
 <body data-theme="ocean" class="min-h-screen antialiased">
-  <div class="max-w-6xl mx-auto p-4">
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-      <div>
-        <h1 class="text-3xl font-extrabold">Vozes</h1>
-        <p class="text-sm opacity-80">Comunidade para criar, buscar e compartilhar personagens — versão com roles/admin.</p>
-      </div>
+<div class="max-w-6xl mx-auto p-4">
 
-      <div class="flex items-center gap-3 flex-wrap">
-        <input id="search" type="search" aria-label="Pesquisar personagem" placeholder="Pesquisar..." class="px-3 py-2 rounded-md bg-white/5 placeholder:opacity-60 outline-none" />
-
-        <div class="relative">
-          <button id="themeBtn" aria-label="Trocar paleta" class="px-3 py-2 rounded-md card">🎨 Paleta</button>
-          <div id="themeMenu" class="hidden absolute right-0 mt-2 w-44 card p-2 rounded-md shadow-lg">
-            <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="ocean">Ocean (padrão)</button>
-            <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="sunset">Sunset</button>
-            <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="mint">Mint</button>
-          </div>
-        </div>
-
-        <div id="authArea" class="flex items-center gap-2">
-          <button id="btnLogin" class="px-3 py-2 rounded-md card">Entrar</button>
-          <button id="btnRegister" class="px-3 py-2 rounded-md btn-accent">Criar Conta</button>
-        </div>
-
-        <div id="userArea" class="hidden items-center gap-2">
-          <img id="headerAvatar" class="avatar-sm" alt="avatar"/>
-          <span id="headerName" class="text-sm opacity-90"></span>
-          <span id="headerRole" class="role-badge muted"></span>
-          <button id="btnProfile" class="px-3 py-1 rounded-md card">Meu Perfil</button>
-          <button id="btnNewPost" class="px-3 py-1 rounded-md btn-accent">+ Novo Post</button>
-          <button id="btnLogout" class="px-3 py-1 rounded-md card">Sair</button>
-        </div>
-      </div>
-    </header>
-
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <section class="col-span-1 lg:col-span-2 space-y-4">
-        <div id="posts" class="space-y-4"></div>
-      </section>
-
-      <aside class="card p-4 rounded-md hidden lg:block sticky top-6">
-        <h2 class="text-xl font-semibold mb-2">Como usar</h2>
-        <ol class="list-decimal ml-5 space-y-1 text-sm opacity-90">
-          <li>Crie/entre em sua conta para postar e comentar. O primeiro usuário cadastrado torna-se <strong>admin</strong>.</li>
-          <li>Admins podem deletar posts/comentários e promover outros usuários.</li>
-          <li>Clique em avatar/nome para abrir perfil público.</li>
-          <li>Pronto para migrar a camada <code>api</code> para um backend real.</li>
-        </ol>
-      </aside>
-    </main>
-
-    <footer class="mt-8 text-xs opacity-80 text-center">Versão protótipo — persistência local (localStorage).</footer>
+<header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-3xl font-extrabold">Vozes</h1>
+    <p class="text-sm opacity-80">Comunidade para criar, buscar e compartilhar personagens — versão com roles/admin.</p>
   </div>
-
-  <!-- Backdrop for modals -->
-  <div id="modalBackdrop" class="fixed inset-0 hidden z-40 modal-backdrop"></div>
-
-  <!-- Login Modal -->
-  <div id="loginModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
-    <div class="w-full max-w-md card rounded-lg p-5">
-      <h3 class="text-xl font-semibold mb-3">Entrar</h3>
-      <form id="loginForm" class="space-y-3" aria-label="Formulário de login">
-        <div><label class="text-sm">Nickname</label><input id="loginNick" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
-        <div><label class="text-sm">Senha</label><input id="loginPass" type="password" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
-        <div class="flex justify-end gap-2">
-          <button type="button" id="loginCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-md btn-accent">Entrar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Register Modal -->
-  <div id="registerModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
-    <div class="w-full max-w-md card rounded-lg p-5">
-      <h3 class="text-xl font-semibold mb-3">Criar Conta</h3>
-      <form id="registerForm" class="space-y-3" aria-label="Formulário de registro">
-        <div><label class="text-sm">Nickname</label><input id="regNick" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
-        <div><label class="text-sm">Senha</label><input id="regPass" type="password" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
-        <div><label class="text-sm">Foto (opcional)</label><input id="regAvatar" type="file" accept="image/*" class="w-full text-sm" /></div>
-        <div class="flex justify-end gap-2">
-          <button type="button" id="regCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
-          <button type="submit" class="px-4 py-2 rounded-md btn-accent">Criar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- New Post Modal -->
-  <div id="newPostModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
-    <div class="w-full max-w-2xl card rounded-lg p-5 overflow-y-auto max-h-[90vh]">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-xl font-semibold">Novo Post — Passaporte</h3>
-        <button id="newPostClose" class="px-2 py-1 rounded-md card">Fechar</button>
-      </div>
-      <form id="newPostForm" class="space-y-3" aria-label="Formulário novo post">
-        <div><label class="text-sm">Nome do personagem</label><input id="npName" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
-        <div><label class="text-sm">Foto do personagem</label><input id="npAvatar" type="file" accept="image/*" class="w-full text-sm" /></div>
-        <div><label class="text-sm">Descrição</label><textarea id="npDesc" rows="4" required class="w-full px-3 py-2 rounded-md bg-white/5"></textarea></div>
-        <div><label class="text-sm">Imagens</label><input id="npImages" type="file" accept="image/*" multiple class="w-full text-sm" /></div>
-        <div class="flex justify-end gap-2">
-          <button type="button" id="newPostCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
-          <button type="submit" id="newPostSubmit" class="px-4 py-2 rounded-md btn-accent">Postar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Profile View Modal (public) -->
-  <div id="profileViewModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
-    <div class="w-full max-w-3xl card rounded-lg p-5 max-h-[90vh] overflow-auto">
-      <div class="flex items-start gap-4">
-        <img id="pvAvatar" class="avatar-lg" alt="avatar"/>
-        <div class="flex-1">
-          <div class="flex items-center justify-between">
-            <div>
-              <h3 id="pvName" class="text-2xl font-semibold"></h3>
-              <div class="text-sm opacity-80">Perfil público</div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button id="pvPromote" class="px-3 py-1 rounded-md btn-accent hidden" title="Promover para admin">Promover</button>
-              <button id="pvDemote" class="px-3 py-1 rounded-md card hidden" title="Remover admin">Remover admin</button>
-              <button id="pvClose" class="px-3 py-1 rounded-md card">Fechar</button>
-            </div>
-          </div>
-          <hr class="my-3"/>
-          <h4 class="font-semibold">Posts de <span id="pvNameSmall"></span></h4>
-          <div id="pvPosts" class="space-y-3 mt-3"></div>
-        </div>
+  <div class="flex items-center gap-3 flex-wrap">
+    <input id="search" type="search" aria-label="Pesquisar personagem" placeholder="Pesquisar..." class="px-3 py-2 rounded-md bg-white/5 placeholder:opacity-60" />
+    <div class="relative">
+      <button id="themeBtn" aria-label="Trocar paleta" class="px-3 py-2 rounded-md card">🎨 Paleta</button>
+      <div id="themeMenu" class="hidden absolute right-0 mt-2 w-44 card p-2 rounded-md shadow-lg">
+        <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="ocean">Ocean (padrão)</button>
+        <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="sunset">Sunset</button>
+        <button class="w-full text-left px-2 py-2 rounded hover:bg-white/5" data-theme="mint">Mint</button>
       </div>
     </div>
-  </div>
 
-  <!-- Template: post -->
-  <template id="postTpl">
-    <article class="card p-4 rounded-md">
-      <div class="flex gap-4">
-        <img class="avatar-lg postAvatar" alt="avatar"/>
-        <div class="flex-1">
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="text-lg font-semibold postName"></h3>
-                <span class="text-xs opacity-80 postRoleBadge"></span>
-              </div>
-              <div class="text-xs opacity-80 postMeta"></div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="px-2 py-1 rounded-md card btn-comment">💬</button>
-              <button class="px-2 py-1 rounded-md danger btn-delete-post hidden" title="Excluir post">Excluir</button>
-            </div>
-          </div>
-          <p class="mt-2 postDesc"></p>
-          <div class="mt-3 postImages grid grid-cols-3 gap-2"></div>
-          <div class="mt-3 commentBlock hidden">
-            <div class="space-y-2 existingComments"></div>
-            <form class="mt-2 commentForm flex gap-2 items-center">
-              <img class="avatar-sm commentAuthorAvatar" alt="avatar"/>
-              <input class="flex-1 px-3 py-2 rounded-md bg-white/5 commentInput" placeholder="Escreva um comentário..." />
-              <button class="px-3 py-2 rounded-md btn-accent commentSend" disabled>Enviar</button>
-            </form>
-          </div>
-        </div>
+    <div id="authArea" class="flex items-center gap-2">
+      <button id="btnLogin" class="px-3 py-2 rounded-md card">Entrar</button>
+      <button id="btnRegister" class="px-3 py-2 rounded-md btn-accent">Criar Conta</button>
+    </div>
+
+    <div id="userArea" class="hidden items-center gap-2">
+      <img id="headerAvatar" class="avatar-sm" alt="avatar"/>
+      <span id="headerName" class="text-sm opacity-90"></span>
+      <span id="headerRole" class="role-badge muted"></span>
+      <button id="btnProfile" class="px-3 py-1 rounded-md card">Meu Perfil</button>
+      <button id="btnNewPost" class="px-3 py-1 rounded-md btn-accent">+ Novo Post</button>
+      <button id="btnLogout" class="px-3 py-1 rounded-md card">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <section class="col-span-1 lg:col-span-2 space-y-4">
+    <div id="posts" class="space-y-4"></div>
+  </section>
+  <aside class="card p-4 rounded-md hidden lg:block sticky top-6">
+    <h2 class="text-xl font-semibold mb-2">Como usar</h2>
+    <ol class="list-decimal ml-5 space-y-1 text-sm opacity-90">
+      <li>Crie/entre em sua conta para postar e comentar. O primeiro usuário cadastrado torna-se <strong>admin</strong>.</li>
+      <li>Admins podem deletar posts/comentários e promover outros usuários.</li>
+      <li>Clique em avatar/nome para abrir perfil público.</li>
+      <li>Pronto para migrar a camada <code>api</code> para um backend real.</li>
+    </ol>
+  </aside>
+</main>
+<footer class="mt-8 text-xs opacity-80 text-center">Versão protótipo — persistência local (localStorage).</footer>
+</div>
+
+<div id="modalBackdrop" class="fixed inset-0 hidden z-40 modal-backdrop"></div>
+
+<!-- Login Modal -->
+<div id="loginModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
+  <div class="w-full max-w-md card rounded-lg p-5">
+    <h3 class="text-xl font-semibold mb-3">Entrar</h3>
+    <form id="loginForm" class="space-y-3" aria-label="Formulário de login">
+      <div><label class="text-sm">Nickname</label><input id="loginNick" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+      <div><label class="text-sm">Senha</label><input id="loginPass" type="password" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+      <div class="flex justify-end gap-2">
+        <button type="button" id="loginCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
+        <button type="submit" class="px-4 py-2 rounded-md btn-accent">Entrar</button>
       </div>
-    </article>
-  </template>
+    </form>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div id="registerModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4">
+  <div class="w-full max-w-md card rounded-lg p-5">
+    <h3 class="text-xl font-semibold mb-3">Criar Conta</h3>
+    <form id="registerForm" class="space-y-3" aria-label="Formulário de registro">
+      <div><label class="text-sm">Nickname</label><input id="regNick" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+      <div><label class="text-sm">Senha</label><input id="regPass" type="password" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+      <div><label class="text-sm">Foto (opcional)</label><input id="regAvatar" type="file" accept="image/*" class="w-full text-sm" /></div>
+      <div class="flex justify-end gap-2">
+        <button type="button" id="regCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
+        <button type="submit" class="px-4 py-2 rounded-md btn-accent">Criar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- New Post Modal -->
+<div id="postModal" class="fixed inset-0 hidden z-50 items-center justify-center p-4 overflow-auto">
+  <div class="w-full max-w-lg card rounded-lg p-5">
+    <h3 class="text-xl font-semibold mb-3">Novo Post</h3>
+    <form id="postForm" class="space-y-3">
+      <div><label class="text-sm">Título</label><input id="postTitle" required class="w-full px-3 py-2 rounded-md bg-white/5" /></div>
+      <div><label class="text-sm">Descrição</label><textarea id="postDesc" required class="w-full px-3 py-2 rounded-md bg-white/5"></textarea></div>
+      <div><label class="text-sm">Imagem (opcional)</label><input id="postImg" type="file" accept="image/*" class="w-full text-sm" /></div>
+      <div class="flex justify-end gap-2">
+        <button type="button" id="postCancel" class="px-3 py-2 rounded-md card">Cancelar</button>
+        <button type="submit" class="px-4 py-2 rounded-md btn-accent">Postar</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
-/* =======================
-   API layer (localStorage)
-   - structured to be easily swapped for real backend
-   ======================= */
-const api = {
-  async getUsers(){
-    return JSON.parse(localStorage.getItem('vozes_users') || '[]');
-  },
-  async saveUsers(users){
-    localStorage.setItem('vozes_users', JSON.stringify(users));
-  },
-  // create user: if first user -> role admin
-  async createUser({nick, avatarDataUrl, passHash}){
-    const users = await api.getUsers();
-    if(users.find(u=>u.nick.toLowerCase()===nick.toLowerCase())) throw new Error('Nickname já existe');
-    const role = users.length === 0 ? 'admin' : 'user';
-    const user = { id: Date.now().toString(), nick, avatar: avatarDataUrl||'', passHash, role };
-    users.push(user);
-    await api.saveUsers(users);
-    return user;
-  },
-  async authenticate({nick, passHash}){
-    const users = await api.getUsers();
-    const u = users.find(x=>x.nick.toLowerCase()===nick.toLowerCase() && x.passHash === passHash);
-    if(!u) throw new Error('Credenciais inválidas');
-    localStorage.setItem('vozes_session', JSON.stringify({ userId: u.id, createdAt: new Date().toISOString() }));
-    return u;
-  },
-  async getSession(){
-    const s = JSON.parse(localStorage.getItem('vozes_session') || 'null');
-    if(!s) return null;
-    const users = await api.getUsers();
-    return users.find(u=>u.id === s.userId) || null;
-  },
-  async clearSession(){
-    localStorage.removeItem('vozes_session');
-  },
-
-  async getPosts(){
-    return JSON.parse(localStorage.getItem('vozes_posts') || '[]');
-  },
-  async savePosts(posts){
-    localStorage.setItem('vozes_posts', JSON.stringify(posts));
-  },
-  async savePost(post){
-    const posts = await api.getPosts();
-    posts.unshift(post);
-    await api.savePosts(posts);
-    return post;
-  },
-  async updatePost(post){
-    const posts = await api.getPosts();
-    const idx = posts.findIndex(p=>p.id===post.id);
-    if(idx>=0) posts[idx] = post;
-    else posts.unshift(post);
-    await api.savePosts(posts);
-  },
-  async deletePost(postId){
-    let posts = await api.getPosts();
-    posts = posts.filter(p=>p.id !== postId);
-    await api.savePosts(posts);
-  },
-  async addComment(postId, comment){
-    const posts = await api.getPosts();
-    const p = posts.find(x=>x.id===postId);
-    if(!p) throw new Error('Post não encontrado');
-    p.comments = p.comments || [];
-    p.comments.push(comment);
-    await api.savePosts(posts);
-    return p;
-  },
-  async deleteComment(postId, commentIndex){
-    const posts = await api.getPosts();
-    const p = posts.find(x=>x.id===postId);
-    if(!p) throw new Error('Post não encontrado');
-    p.comments = p.comments || [];
-    if(commentIndex < 0 || commentIndex >= p.comments.length) throw new Error('Comentário não encontrado');
-    p.comments.splice(commentIndex, 1);
-    await api.savePosts(posts);
-    return p;
-  },
-  async promoteUser(userId){
-    const users = await api.getUsers();
-    const u = users.find(x=>x.id===userId);
-    if(!u) throw new Error('Usuário não encontrado');
-    u.role = 'admin';
-    await api.saveUsers(users);
-    return u;
-  },
-  async demoteUser(userId){
-    const users = await api.getUsers();
-    const u = users.find(x=>x.id===userId);
-    if(!u) throw new Error('Usuário não encontrado');
-    u.role = 'user';
-    await api.saveUsers(users);
-    return u;
-  },
-  async deleteUser(userId){
-    let users = await api.getUsers();
-    users = users.filter(u=>u.id !== userId);
-    await api.saveUsers(users);
-    // optional: remove user's posts/comments (left as is)
-    return true;
-  }
-};
-
-/* =======================
-   Utilities
-   ======================= */
-const $ = id => document.getElementById(id);
-const fileToDataURL = file => new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); });
-
-// client-side SHA-256 (hex)
-async function hashStringSHA256(str){
-  const enc = new TextEncoder();
-  const data = enc.encode(str);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-function toast(msg){
-  const d = document.createElement('div');
-  d.className = 'toast';
-  d.textContent = msg;
-  document.body.appendChild(d);
-  setTimeout(()=> d.remove(), 2600);
-}
-
+const $=id=>document.getElementById(id);
+function toast(msg){ const d=document.createElement('div'); d.className='toast'; d.textContent=msg; document.body.appendChild(d); setTimeout(()=>d.remove(),2600); }
 function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+function showModal(el){ $('modalBackdrop').classList.remove('hidden'); el.classList.remove('hidden'); }
+function hideModal(el){ el.classList.add('hidden'); const modals=Array.from(document.querySelectorAll('.fixed.z-50')).filter(m=>!m.classList.contains('hidden')); if(modals.length===0) $('modalBackdrop').classList.add('hidden'); }
 
-function showModal(modalEl){
-  $('modalBackdrop').classList.remove('hidden');
-  modalEl.classList.remove('hidden');
-}
-function hideModal(modalEl){
-  modalEl.classList.add('hidden');
-  // hide backdrop if no visible modal
-  const modals = Array.from(document.querySelectorAll('.fixed.z-50, .fixed.z-50')).filter(m=>!m.classList.contains('hidden'));
-  if(modals.length === 0) $('modalBackdrop').classList.add('hidden');
-}
+async function hash(str){ const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+async function fileToDataURL(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>res(fr.result); fr.onerror=rej; fr.readAsDataURL(file); }); }
 
-/* =======================
-   UI: session & theme
-   ======================= */
-async function initSessionUI(){
-  const user = await api.getSession();
-  if(user){
+let db={users:[], posts:[]}, session=null;
+
+function saveDB(){ localStorage.setItem('vozes_db', JSON.stringify(db)); }
+function loadDB(){ const d=localStorage.getItem('vozes_db'); db=d?JSON.parse(d):{users:[],posts:[]}; }
+
+function initUI(){
+  if(session){
     $('authArea').classList.add('hidden');
     $('userArea').classList.remove('hidden');
-    $('headerAvatar').src = user.avatar || 'https://via.placeholder.com/40?text=?';
-    $('headerName').textContent = user.nick;
-    $('headerRole').textContent = user.role === 'admin' ? 'admin' : '';
-  } else {
+    const u=db.users.find(x=>x.id===session);
+    $('headerAvatar').src=u.avatar||'https://i.pravatar.cc/36';
+    $('headerName').textContent=u.nickname;
+    $('headerRole').textContent=u.role;
+  }else{
     $('authArea').classList.remove('hidden');
     $('userArea').classList.add('hidden');
   }
 }
 
-// theme
-$('themeBtn').addEventListener('click', ()=> $('themeMenu').classList.toggle('hidden'));
-document.querySelectorAll('#themeMenu button').forEach(b=>{
-  b.addEventListener('click', e=>{
-    const t = e.currentTarget.dataset.theme;
-    document.body.setAttribute('data-theme', t);
-    localStorage.setItem('vozes_theme', t);
-    $('themeMenu').classList.add('hidden');
-    toast('Tema alterado');
+function renderPosts(filter=''){
+  const container=$('posts');
+  container.innerHTML='';
+  db.posts.filter(p=>p.title.toLowerCase().includes(filter.toLowerCase())).sort((a,b)=>b.date-a.date).forEach(p=>{
+    const user=db.users.find(u=>u.id===p.author);
+    const div=document.createElement('div');
+    div.className='card p-4 rounded-md';
+    div.innerHTML=`<div class="flex justify-between items-center mb-2">
+      <div class="flex items-center gap-2">
+        <img src="${user.avatar||'https://i.pravatar.cc/36'}" class="avatar-sm"/>
+        <span>${escapeHtml(user.nickname)}</span>
+        <span class="role-badge muted">${user.role}</span>
+      </div>
+      ${session===p.author||db.users.find(u=>u.id===session)?.role==='admin'?`<button data-id="${p.id}" class="deletePost px-2 py-1 danger text-xs">Deletar</button>`:''}
+    </div>
+    <h4 class="font-semibold">${escapeHtml(p.title)}</h4>
+    <p class="mt-1 mb-2">${escapeHtml(p.desc)}</p>
+    ${p.img?`<img src="${p.img}" class="img-thumb">`:''}`;
+    container.appendChild(div);
   });
+  document.querySelectorAll('.deletePost').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      const id=e.currentTarget.dataset.id;
+      db.posts=db.posts.filter(x=>x.id!==id); saveDB(); renderPosts($('search').value); toast('Post deletado');
+    });
+  });
+}
+
+loadDB(); initUI(); renderPosts();
+
+$('btnLogin').onclick=()=>showModal($('loginModal'));
+$('loginCancel').onclick=()=>hideModal($('loginModal'));
+$('btnRegister').onclick=()=>showModal($('registerModal'));
+$('regCancel').onclick=()=>hideModal($('registerModal'));
+$('btnNewPost').onclick=()=>showModal($('postModal'));
+$('postCancel').onclick=()=>hideModal($('postModal'));
+
+$('themeBtn').onclick=()=> $('themeMenu').classList.toggle('hidden');
+document.querySelectorAll('#themeMenu button').forEach(b=>b.onclick=e=>{
+  document.body.setAttribute('data-theme',e.currentTarget.dataset.theme);
+  localStorage.setItem('vozes_theme', e.currentTarget.dataset.theme);
+  $('themeMenu').classList.add('hidden'); toast('Tema alterado');
 });
 document.body.setAttribute('data-theme', localStorage.getItem('vozes_theme')||'ocean');
-document.addEventListener('click', e=>{ if(!$('themeBtn').contains(e.target) && !$('themeMenu').contains(e.target)) $('themeMenu').classList.add('hidden'); });
 
-/* =======================
-   Auth handlers (register/login/logout)
-   ======================= */
-$('btnRegister').addEventListener('click', ()=> {
-  showModal($('registerModal'));
-});
-$('regCancel').addEventListener('click', ()=> hideModal($('registerModal')));
-$('registerForm').addEventListener('submit', async e=>{
+$('loginForm').onsubmit=async e=>{
   e.preventDefault();
-  try{
-    const nick = $('regNick').value.trim();
-    const pass = $('regPass').value;
-    if(!nick || !pass) return toast('Nickname e senha são obrigatórios');
-    const passHash = await hashStringSHA256(pass);
-    let avatar = '';
-    if($('regAvatar').files[0]) avatar = await fileToDataURL($('regAvatar').files[0]);
-    const user = await api.createUser({ nick, avatarDataUrl: avatar, passHash });
-    // auto-login
-    localStorage.setItem('vozes_session', JSON.stringify({ userId: user.id, createdAt: new Date().toISOString() }));
-    await initSessionUI();
-    hideModal($('registerModal'));
-    toast('Conta criada e logado (primeiro usuário torna-se admin)');
-    renderAll();
-  }catch(err){
-    toast(err.message || 'Erro ao criar conta');
-    console.error(err);
-  }
-});
+  const nick=$('loginNick').value, pass=$('loginPass').value;
+  const h=await hash(pass);
+  const u=db.users.find(x=>x.nickname===nick&&x.pass===h);
+  if(u){ session=u.id; initUI(); hideModal($('loginModal')); toast('Login realizado'); }
+  else toast('Credenciais inválidas');
+};
 
-$('btnLogin').addEventListener('click', ()=> showModal($('loginModal')));
-$('loginCancel').addEventListener('click', ()=> hideModal($('loginModal')));
-$('loginForm').addEventListener('submit', async e=>{
+$('registerForm').onsubmit=async e=>{
   e.preventDefault();
-  try{
-    const nick = $('loginNick').value.trim();
-    const pass = $('loginPass').value;
-    if(!nick || !pass) return toast('Preencha nickname e senha');
-    const passHash = await hashStringSHA256(pass);
-    await api.authenticate({ nick, passHash });
-    await initSessionUI();
-    hideModal($('loginModal'));
-    toast('Logado com sucesso');
-    renderAll();
-  }catch(err){
-    toast(err.message || 'Erro ao autenticar');
-    console.error(err);
-  }
-});
+  const nick=$('regNick').value, pass=$('regPass').value, avatarFile=$('regAvatar').files[0];
+  if(db.users.find(x=>x.nickname===nick)){ toast('Nickname já existe'); return; }
+  const h=await hash(pass);
+  const avatar=avatarFile?await fileToDataURL(avatarFile):null;
+  const u={id:Date.now().toString(), nickname:nick, pass:h, avatar:avatar, role:db.users.length===0?'admin':'user'};
+  db.users.push(u); saveDB(); toast('Conta criada'); hideModal($('registerModal'));
+};
 
-$('btnLogout').addEventListener('click', async ()=>{
-  await api.clearSession();
-  await initSessionUI();
-  toast('Desconectado');
-  renderAll();
-});
-
-/* =======================
-   New post flow (requires login)
-   ======================= */
-$('btnNewPost').addEventListener('click', async ()=>{
-  const s = await api.getSession();
-  if(!s){ toast('Faça login para criar posts'); return; }
-  showModal($('newPostModal'));
-});
-$('newPostClose').addEventListener('click', ()=> hideModal($('newPostModal')));
-$('newPostCancel').addEventListener('click', ()=> hideModal($('newPostModal')));
-$('newPostForm').addEventListener('submit', async e=>{
+$('postForm').onsubmit=async e=>{
   e.preventDefault();
-  const user = await api.getSession();
-  if(!user){ toast('Faça login para criar posts'); hideModal($('newPostModal')); return; }
-  const submitBtn = $('newPostSubmit'); submitBtn.disabled = true; submitBtn.textContent = 'Postando...';
-  try{
-    const name = $('npName').value.trim();
-    const desc = $('npDesc').value.trim();
-    const avatarFile = $('npAvatar').files[0];
-    const images = Array.from($('npImages').files);
-    const avatar = avatarFile ? await fileToDataURL(avatarFile) : '';
-    const imgsData = [];
-    for(const f of images) imgsData.push(await fileToDataURL(f));
-    const post = {
-      id: Date.now().toString(),
-      name, desc, avatar, images: imgsData,
-      comments: [],
-      createdAt: new Date().toISOString(),
-      userId: user.id
-    };
-    await api.savePost(post);
-    hideModal($('newPostModal'));
-    $('newPostForm').reset();
-    toast('Post criado');
-    renderAll();
-  }catch(err){
-    console.error(err);
-    toast('Erro ao criar post');
-  } finally {
-    submitBtn.disabled = false; submitBtn.textContent = 'Postar';
-  }
-});
+  const title=$('postTitle').value, desc=$('postDesc').value, imgFile=$('postImg').files[0];
+  const img=imgFile?await fileToDataURL(imgFile):null;
+  const post={id:Date.now().toString(), title, desc, img, author:session, date:Date.now()};
+  db.posts.push(post); saveDB(); hideModal($('postModal')); renderPosts($('search').value); toast('Post criado');
+};
 
-/* =======================
-   Render posts, comments, admin controls
-   ======================= */
-async function renderAll(){
-  await initSessionUI();
-  const posts = await api.getPosts();
-  posts.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt));
-  renderPosts(posts);
-}
+$('btnLogout').onclick=()=>{ session=null; initUI(); renderPosts($('search').value); toast('Deslogado'); };
+$('search').oninput=e=>renderPosts(e.currentTarget.value);
 
-async function renderPosts(posts){
-  const container = $('posts');
-  container.innerHTML = '';
-  if(posts.length === 0){
-    container.innerHTML = '<div class="text-center opacity-70 p-6">Nenhum post. Crie o primeiro!</div>';
-    return;
-  }
-  const users = await api.getUsers();
-  const currentUser = await api.getSession();
-
-  for(const p of posts){
-    const node = document.importNode($('postTpl').content, true);
-    const postAvatar = node.querySelector('.postAvatar');
-    const postName = node.querySelector('.postName');
-    const postMeta = node.querySelector('.postMeta');
-    const postDesc = node.querySelector('.postDesc');
-    const postImages = node.querySelector('.postImages');
-    const commentBlock = node.querySelector('.commentBlock');
-    const commentForm = node.querySelector('.commentForm');
-    const commentInput = node.querySelector('.commentInput');
-    const commentSend = node.querySelector('.commentSend');
-    const existingComments = node.querySelector('.existingComments');
-    const deletePostBtn = node.querySelector('.btn-delete-post');
-    const postRoleBadge = node.querySelector('.postRoleBadge');
-
-    // author info
-    const author = users.find(u=>u.id === p.userId);
-    if(author){
-      postAvatar.src = p.avatar || author.avatar || 'https://via.placeholder.com/110x140?text=Sem';
-      postAvatar.style.cursor = 'pointer';
-      postAvatar.addEventListener('click', ()=> openProfileView(author.id));
-      postName.innerHTML = `<span class="cursor-pointer" style="text-decoration:underline">${escapeHtml(p.name)}</span>`;
-      postName.querySelector('span').addEventListener('click', ()=> openProfileView(author.id));
-      postRoleBadge.textContent = author.role === 'admin' ? 'admin' : '';
-    } else {
-      postAvatar.src = p.avatar || 'https://via.placeholder.com/110x140?text=Sem';
-      postName.textContent = p.name;
-    }
-
-    postMeta.textContent = new Date(p.createdAt).toLocaleString();
-    postDesc.textContent = p.desc || '';
-    postImages.innerHTML = '';
-    (p.images||[]).forEach(src=>{
-      const img = document.createElement('img');
-      img.src = src; img.className = 'img-thumb';
-      postImages.appendChild(img);
-    });
-
-    // show delete post if currentUser is admin OR post owner
-    if(currentUser && (currentUser.role === 'admin' || currentUser.id === p.userId)){
-      deletePostBtn.classList.remove('hidden');
-      deletePostBtn.addEventListener('click', async ()=>{
-        if(!confirm('Excluir este post?')) return;
-        try{
-          await api.deletePost(p.id);
-          toast('Post excluído');
-          renderAll();
-        }catch(err){ console.error(err); toast('Erro ao excluir'); }
-      });
-    }
-
-    // comments rendering
-    function refreshComments(){
-      existingComments.innerHTML = '';
-      (p.comments || []).forEach((c, idx)=>{
-        const row = document.createElement('div');
-        row.className = 'flex items-start gap-2 p-2 rounded-md bg-white/5';
-        // find author
-        const ca = users.find(u=>u.id === c.authorId);
-        const avatarUrl = ca ? (ca.avatar || 'https://via.placeholder.com/40') : 'https://via.placeholder.com/40';
-        const authorName = escapeHtml(c.authorName || 'Anon');
-        row.innerHTML = `<img src="${avatarUrl}" class="avatar-sm c-avatar" style="cursor:pointer"/><div class="flex-1"><div class="flex items-center justify-between"><div><div class="text-sm font-semibold c-name" style="cursor:pointer">${authorName}</div><div class="text-xs opacity-80">${new Date(c.at).toLocaleString()}</div></div><div class="flex gap-2 c-actions"></div></div><div class="mt-1 text-sm">${escapeHtml(c.text)}</div></div>`;
-        // clicking avatar/name opens profile if available
-        const imgEl = row.querySelector('.c-avatar');
-        const nameEl = row.querySelector('.c-name');
-        if(ca){
-          imgEl.addEventListener('click', ()=> openProfileView(ca.id));
-          nameEl.addEventListener('click', ()=> openProfileView(ca.id));
-        }
-        // add delete comment button if currentUser is admin OR comment author
-        const actions = row.querySelector('.c-actions');
-        if(currentUser && (currentUser.role === 'admin' || currentUser.id === c.authorId)){
-          const del = document.createElement('button');
-          del.className = 'px-2 py-1 rounded-md danger';
-          del.textContent = 'Excluir';
-          del.addEventListener('click', async ()=>{
-            if(!confirm('Excluir comentário?')) return;
-            try{
-              await api.deleteComment(p.id, idx);
-              toast('Comentário removido');
-              renderAll();
-            }catch(err){ console.error(err); toast('Erro'); }
-          });
-          actions.appendChild(del);
-        }
-        existingComments.appendChild(row);
-      });
-    }
-    refreshComments();
-
-    // comment toggle
-    const btnComment = node.querySelector('.btn-comment');
-    btnComment.addEventListener('click', ()=> commentBlock.classList.toggle('hidden'));
-
-    // comment form behavior
-    commentInput.addEventListener('input', ()=> commentSend.disabled = !commentInput.value.trim());
-    commentForm.addEventListener('submit', async ev=>{
-      ev.preventDefault();
-      const sess = await api.getSession();
-      if(!sess){ toast('Faça login para comentar'); return; }
-      const text = commentInput.value.trim();
-      if(!text) return;
-      const comment = { authorId: sess.id, authorName: sess.nick, text, at: new Date().toISOString() };
-      try{
-        await api.addComment(p.id, comment);
-        toast('Comentário enviado');
-        renderAll();
-      }catch(err){ console.error(err); toast('Erro ao comentar'); }
-    });
-
-    container.appendChild(node);
-  }
-}
-
-/* =======================
-   Profile view (public) with admin promote/demote
-   ======================= */
-async function openProfileView(userId){
-  const users = await api.getUsers();
-  const user = users.find(u=>u.id === userId);
-  if(!user){ toast('Usuário não encontrado'); return; }
-  $('pvAvatar').src = user.avatar || 'https://via.placeholder.com/110x140?text=Sem';
-  $('pvName').textContent = user.nick;
-  $('pvNameSmall').textContent = user.nick;
-  $('pvPosts').innerHTML = '';
-
-  // show/hide promote/demote based on current user
-  const current = await api.getSession();
-  if(current && current.role === 'admin' && current.id !== user.id){
-    $('pvPromote').classList.toggle('hidden', user.role === 'admin');
-    $('pvDemote').classList.toggle('hidden', user.role !== 'admin');
-  } else {
-    $('pvPromote').classList.add('hidden');
-    $('pvDemote').classList.add('hidden');
-  }
-
-  // list user's posts
-  const posts = await api.getPosts();
-  const userPosts = posts.filter(p => p.userId === user.id).sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
-  userPosts.forEach(p=>{
-    const d = document.createElement('div');
-    d.className = 'card p-3 rounded-md';
-    d.innerHTML = `<div class="flex items-start gap-3"><img src="${p.avatar||'https://via.placeholder.com/110x140?text=Sem'}" class="w-16 h-20 object-cover rounded"/><div><div class="font-semibold">${escapeHtml(p.name)} <span class="text-xs opacity-80">- ${new Date(p.createdAt).toLocaleString()}</span></div><div class="text-sm mt-1">${escapeHtml(p.desc)}</div></div></div>`;
-    $('pvPosts').appendChild(d);
-  });
-  showModal($('profileViewModal'));
-
-  // wire promote/demote
-  $('pvPromote').onclick = async ()=>{
-    try{
-      await api.promoteUser(user.id);
-      toast('Usuário promovido a admin');
-      openProfileView(user.id); // refresh view
-      renderAll();
-    }catch(err){ console.error(err); toast('Erro'); }
-  };
-  $('pvDemote').onclick = async ()=>{
-    try{
-      await api.demoteUser(user.id);
-      toast('Usuário revogado de admin');
-      openProfileView(user.id);
-      renderAll();
-    }catch(err){ console.error(err); toast('Erro'); }
-  };
-}
-
-$('pvClose').addEventListener('click', ()=> hideModal($('profileViewModal')));
-
-/* =======================
-   Modal backdrop, search, boot
-   ======================= */
-// clicking backdrop hides modals
-$('modalBackdrop').addEventListener('click', ()=>{
-  ['loginModal','registerModal','newPostModal','profileViewModal'].forEach(id=>{
-    const m = $(id);
-    if(m) hideModal(m);
-  });
-});
-// Escape closes
-document.addEventListener('keydown', e=>{
-  if(e.key === 'Escape'){
-    ['loginModal','registerModal','newPostModal','profileViewModal'].forEach(id=>{
-      const m = $(id);
-      if(m) hideModal(m);
-    });
-  }
-});
-
-// wire login/register modal opening via backdrop handler too
-$('btnLogin').addEventListener('click', ()=> showModal($('loginModal')));
-$('btnRegister').addEventListener('click', ()=> showModal($('registerModal')));
-
-// search
-$('search').addEventListener('input', async ()=>{
-  const q = $('search').value.trim().toLowerCase();
-  const posts = await api.getPosts();
-  if(!q){ renderPosts(posts); return; }
-  renderPosts(posts.filter(p => (p.name||'').toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q)));
-});
-
-/* Boot */
-(async function boot(){
-  // ensure modalBackdrop exists and is first in z-index handling
-  $('modalBackdrop').classList.add('hidden');
-  await initSessionUI();
-  await renderAll();
-})();
 </script>
 </body>
 </html>
+l>
